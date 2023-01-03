@@ -48,9 +48,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _transactions = [
-
-  ];
+  final List<Transaction> _transactions = [];
 
   List<Transaction> get _recentsTransactions {
     return _transactions
@@ -77,6 +75,12 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pop();
   }
 
+  _removeTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((tr) => tr.id == id);
+    });
+  }
+
   _openTransactionModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -88,10 +92,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Despesas Pessoais'),
+    final appBar = AppBar(
+      title: Text(
+        'Despesas Pessoais',
+        style: TextStyle(
+          fontSize: 20 * MediaQuery.of(context).textScaleFactor,
+        ),
       ),
+    );
+      final avaliableHeight = MediaQuery.of(context).size.height -
+          appBar.preferredSize.height -
+          MediaQuery.of(context).padding.top;
+    return Scaffold(
+      appBar: appBar,
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () => _openTransactionModal(context),
@@ -100,8 +113,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Chart(_recentsTransactions),
-            TransactionList(_transactions),
+            SizedBox(
+              height: avaliableHeight * 0.3,
+              child: Chart(_recentsTransactions),
+            ),
+            SizedBox(
+              height: avaliableHeight * 0.7,
+              child: TransactionList(
+                _transactions,
+                _removeTransaction,
+              ),
+            ),
           ],
         ),
       ),
