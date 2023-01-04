@@ -1,6 +1,9 @@
 import 'dart:math';
+
 import 'package:expenses/components/chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'components/transaction_form.dart';
 import 'components/transaction_list.dart';
 import 'models/transaction.dart';
@@ -49,6 +52,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [];
+  bool _showChart = false;
 
   List<Transaction> get _recentsTransactions {
     return _transactions
@@ -92,6 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isLandScape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final appBar = AppBar(
       title: Text(
         'Despesas Pessoais',
@@ -99,10 +105,25 @@ class _MyHomePageState extends State<MyHomePage> {
           fontSize: 20 * MediaQuery.of(context).textScaleFactor,
         ),
       ),
+      actions: [
+        if(isLandScape)
+        IconButton(
+          onPressed: () {
+            setState(
+              () {
+                _showChart = !_showChart;
+              },
+            );
+          },
+          icon: Icon(
+            _showChart ? Icons.list : Icons.pie_chart,
+          ),
+        )
+      ],
     );
-      final avaliableHeight = MediaQuery.of(context).size.height -
-          appBar.preferredSize.height -
-          MediaQuery.of(context).padding.top;
+    final avaliableHeight = MediaQuery.of(context).size.height -
+        appBar.preferredSize.height -
+        MediaQuery.of(context).padding.top;
     return Scaffold(
       appBar: appBar,
       floatingActionButton: FloatingActionButton(
@@ -113,17 +134,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              height: avaliableHeight * 0.3,
-              child: Chart(_recentsTransactions),
-            ),
-            SizedBox(
-              height: avaliableHeight * 0.7,
-              child: TransactionList(
-                _transactions,
-                _removeTransaction,
+            if (_showChart || !isLandScape)
+              SizedBox(
+                height: avaliableHeight * (isLandScape ? 0.8 : 0.3),
+                child: Chart(_recentsTransactions),
               ),
-            ),
+            if (!_showChart || !isLandScape)
+              SizedBox(
+                height: avaliableHeight * (isLandScape ? 1 : 0.7),
+                child: TransactionList(
+                  _transactions,
+                  _removeTransaction,
+                ),
+              ),
           ],
         ),
       ),
