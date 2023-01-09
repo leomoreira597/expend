@@ -1,9 +1,7 @@
 import 'dart:math';
-
 import 'package:expenses/components/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'components/transaction_form.dart';
 import 'components/transaction_list.dart';
 import 'models/transaction.dart';
@@ -96,13 +94,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final midiaQuery = MediaQuery.of(context);
     bool isLandScape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+        midiaQuery.orientation == Orientation.landscape;
     final appBar = AppBar(
       title: Text(
         'Despesas Pessoais',
         style: TextStyle(
-          fontSize: 20 * MediaQuery.of(context).textScaleFactor,
+          fontSize: 20 * midiaQuery.textScaleFactor,
         ),
       ),
       actions: [
@@ -121,9 +120,9 @@ class _MyHomePageState extends State<MyHomePage> {
         )
       ],
     );
-    final avaliableHeight = MediaQuery.of(context).size.height -
+    final avaliableHeight = midiaQuery.size.height -
         appBar.preferredSize.height -
-        MediaQuery.of(context).padding.top;
+        midiaQuery.padding.top;
     return Scaffold(
       appBar: appBar,
       floatingActionButton: FloatingActionButton(
